@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPM 全员生产维护数字化大屏</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        .panel {
+            background: rgba(19, 26, 43, 0.8);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.1);
+            border-radius: 8px;
+            position: relative;
+        }
+        /* 装饰边角，增加科技感 */
+        .panel::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 10px; height: 10px;
+            border-top: 2px solid #00b4d8; border-left: 2px solid #00b4d8;
+        }
+        .panel::after {
+            content: "";
+            position: absolute;
+            bottom: 0; right: 0; width: 10px; height: 10px;
+            border-bottom: 2px solid #00b4d8; border-right: 2px solid #00b4d8;
+        }
+    </style>
+</head>
+<body class="p-4 h-screen flex flex-col overflow-hidden">
+
+    <header class="w-full flex justify-between items-center border-b border-cyan-500/30 pb-3 mb-4">
+        <div class="text-sm text-cyan-400">厂区：智能制造一号车间</div>
+        <h1 class="text-3xl font-bold tracking-widest text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 flex-1">
+            TPM 全员生产维护监控大屏
+        </h1>
+        <div class="text-sm text-cyan-400" id="current-time">系统时间：载入中...</div>
+    </header>
+
+    <main class="grid grid-cols-4 grid-rows-3 gap-4 flex-1">
+        
+        <div class="col-span-1 row-span-3 flex flex-col gap-4">
+            <div class="panel p-4 flex-1 flex flex-col justify-around">
+                <h2 class="text-base font-semibold text-cyan-400 mb-2">📊 今日核心指标</h2>
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <span>MTBF (平均故障间隔)</span>
+                    <span class="text-xl font-bold text-green-400">142 小时</span>
+                </div>
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <span>MTTR (平均修复时间)</span>
+                    <span class="text-xl font-bold text-orange-400">25 分钟</span>
+                </div>
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <span>自主保全 (AM) 执行率</span>
+                    <span class="text-xl font-bold text-cyan-400">96.5%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>计划保全 (PM) 达成率</span>
+                    <span class="text-xl font-bold text-blue-400">100%</span>
+                </div>
+            </div>
+            
+            <div class="panel p-4 flex-[2] flex flex-col">
+                <h2 class="text-base font-semibold text-cyan-400 mb-2">⚙️ 实时设备状态</h2>
+                <div id="chart-status" class="w-full flex-1"></div>
+            </div>
+        </div>
+
+        <div class="col-span-2 row-span-2 flex flex-col gap-4">
+            <div class="panel p-4 flex-1 grid grid-cols-3 gap-4 items-center">
+                <div class="col-span-1 h-full flex flex-col justify-center items-center">
+                    <h2 class="text-lg font-bold text-cyan-400 mb-2">综合设备效率</h2>
+                    <div id="chart-oee" class="w-full h-44"></div>
+                </div>
+                <div class="col-span-2 grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-blue-950/40 p-3 rounded border border-blue-500/20">
+                        <p class="text-xs text-gray-400">时间稼动率</p>
+                        <p class="text-2xl font-bold text-blue-400 mt-1">92.4%</p>
+                        <p class="text-[10px] text-green-400 mt-1">↑ 1.2% 标杆</p>
+                    </div>
+                    <div class="bg-indigo-950/40 p-3 rounded border border-indigo-500/20">
+                        <p class="text-xs text-gray-400">性能稼动率</p>
+                        <p class="text-2xl font-bold text-indigo-400 mt-1">88.5%</p>
+                        <p class="text-[10px] text-red-400 mt-1">↓ 0.5% 预警</p>
+                    </div>
+                    <div class="bg-teal-950/40 p-3 rounded border border-teal-500/20">
+                        <p class="text-xs text-gray-400">良品率</p>
+                        <p class="text-2xl font-bold text-teal-400 mt-1">99.1%</p>
+                        <p class="text-[10px] text-green-400 mt-1">↑ 0.2% 优秀</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel p-4 flex-1 flex flex-col">
+                <h2 class="text-base font-semibold text-cyan-400 mb-2">📈 OEE 历史趋势 (本周)</h2>
+                <div id="chart-line" class="w-full flex-1"></div>
+            </div>
+        </div>
+
+        <div class="col-span-1 row-span-3 flex flex-col gap-4">
+            <div class="panel p-4 flex-[1.5] flex flex-col">
+                <h2 class="text-base font-semibold text-cyan-400 mb-1">⏳ 设备六大损失时间 (Min)</h2>
+                <div id="chart-loss" class="w-full flex-1"></div>
+            </div>
+
+            <div class="panel p-4 flex-[1.5] flex flex-col overflow-hidden">
+                <h2 class="text-base font-semibold text-red-400 mb-2">🚨 异常与安灯(Andon)呼叫</h2>
+                <div class="flex-1 overflow-y-auto text-xs space-y-2 pr-1">
+                    <div class="p-2 bg-red-950/40 border border-red-500/30 rounded flex justify-between items-center">
+                        <div>
+                            <span class="bg-red-600 px-1 rounded text-[10px] mr-1">故障</span>
+                            <span class="text-gray-200">#03 冲压机 压力过载报警</span>
+                        </div>
+                        <span class="text-gray-400">11:32</span>
+                    </div>
+                    <div class="p-2 bg-orange-950/40 border border-orange-500/30 rounded flex justify-between items-center">
+                        <div>
+                            <span class="bg-orange-500 px-1 rounded text-[10px] mr-1">保全</span>
+                            <span class="text-gray-200">#07 机械臂 触发自主清扫提示</span>
+                        </div>
+                        <span class="text-gray-400">11:15</span>
+                    </div>
+                    <div class="p-2 bg-slate-900 border border-gray-700 rounded flex justify-between items-center text-gray-400">
+                        <div>
+                            <span class="bg-gray-600 px-1 rounded text-[10px] mr-1 text-white">已处理</span>
+                            <span>#12 组装线 模具更换完成</span>
+                        </div>
+                        <span>10:45</span>
+                    </div>
+                    <div class="p-2 bg-slate-900 border border-gray-700 rounded flex justify-between items-center text-gray-400">
+                        <div>
+                            <span class="bg-gray-600 px-1 rounded text-[10px] mr-1 text-white">已处理</span>
+                            <span>#01 进料机 点检未签到提醒</span>
+                        </div>
+                        <span>09:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-2 row-span-1 panel p-4 flex flex-col">
+            <h2 class="text-base font-semibold text-cyan-400 mb-2">🔥 5S与红牌作战改善进度</h2>
+            <div class="grid grid-cols-4 gap-4 flex-1 items-center">
+                <div class="text-center">
+                    <p class="text-xs text-gray-400">今日新增红牌</p>
+                    <p class="text-2xl font-bold text-red-500">8 张</p>
+                </div>
+                <div class="text-center border-l border-gray-800">
+                    <p class="text-xs text-gray-400">累计已整改</p>
+                    <p class="text-2xl font-bold text-green-400">124 张</p>
+                </div>
+                <div class="text-center border-l border-gray-800">
+                    <p class="text-xs text-gray-400">整改进行中</p>
+                    <p class="text-2xl font-bold text-yellow-400">5 张</p>
+                </div>
+                <div class="text-center border-l border-gray-800">
+                    <p class="text-xs text-gray-400">当月红牌关闭率</p>
+                    <p class="text-2xl font-bold text-cyan-400">96.1%</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // 1. OEE 仪表盘
+        const chartOee = echarts.init(document.getElementById('chart-oee'));
+        chartOee.setOption({
+            series: [{
+                type: 'gauge',
+                startAngle: 180,
+                endAngle: 0,
+                center: ['50%', '75%'],
+                radius: '90%',
+                min: 0,
+                max: 100,
+                splitNumber: 5,
+                axisLine: {
+                    lineStyle: {
+                        width: 8,
+                        color: [
+                            [0.6, '#ef4444'],
+                            [0.8, '#f59e0b'],
+                            [1, '#10b981']
+                        ]
+                    }
+                },
+                pointer: { width: 4, itemStyle: { color: '#00b4d8' } },
+                axisTick: { show: false },
+                splitLine: { show: false },
+                axisLabel: { color: '#9ca3af', fontSize: 10, distance: -35 },
+                title: { show: false },
+                detail: {
+                    offsetCenter: [0, '-10%'],
+                    valueAnimation: true,
+                    formatter: '{value}%',
+                    textStyle: { fontSize: 22, color: '#fff', fontWeight: 'bold' }
+                },
+                data: [{ value: 81.2 }]
+            }]
+        });
+
+        // 2. 设备状态饼图（开启自动高亮轮播）
+        const chartStatus = echarts.init(document.getElementById('chart-status'));
+        const statusData = [
+            { value: 42, name: '运行', itemStyle: { color: '#10b981' } },
+            { value: 5, name: '待料', itemStyle: { color: '#f59e0b' } },
+            { value: 2, name: '故障停机', itemStyle: { color: '#ef4444' } },
+            { value: 3, name: '计划保养', itemStyle: { color: '#3b82f6' } }
+        ];
+
+        chartStatus.setOption({
+            tooltip: { 
+                trigger: 'item',
+                backgroundColor: 'rgba(11, 15, 25, 0.9)',
+                borderColor: '#00b4d8',
+                textStyle: { color: '#fff' }
+            },
+            legend: { 
+                bottom: '5', 
+                textStyle: { color: '#9ca3af', fontSize: 11 }, 
+                itemWidth: 10, 
+                itemHeight: 10 
+            },
+            series: [{
+                name: '设备状态',
+                type: 'pie',
+                radius: ['45%', '70%'],
+                center: ['50%', '42%'],
+                avoidLabelOverlap: false,
+                itemStyle: { borderRadius: 6 },
+                // 放大选中高亮时的扇区效果
+                emphasis: {
+                    scale: true,
+                    scaleSize: 12, 
+                    itemStyle: {
+                        shadowBlur: 15,
+                        shadowColor: 'rgba(0, 180, 216, 0.5)'
+                    }
+                },
+                label: { 
+                    show: false,
+                    position: 'center',
+                    formatter: '{b}\n{c}台',
+                    textStyle: { fontSize: 16, color: '#fff', fontWeight: 'bold' }
+                },
+                data: statusData
+            }]
+        });
+
+        // --- 核心：自动轮流放大播放逻辑 ---
+        let currentIndex = -1;
+        const dataLength = statusData.length;
+
+        function startRotation() {
+            setInterval(() => {
+                // 1. 取消之前高亮放大的图形
+                chartStatus.dispatchAction({
+                    type: 'downplay',
+                    seriesIndex: 0,
+                    dataIndex: currentIndex
+                });
+
+                // 2. 隐藏之前处于中心区域的文本和当前的 Tooltip
+                chartStatus.dispatchAction({
+                    type: 'hideTip'
+                });
+
+                // 3. 计算并切换到下一个数据索引
+                currentIndex = (currentIndex + 1) % dataLength;
+
+                // 4. 高亮放大当前索引对应的图形
+                chartStatus.dispatchAction({
+                    type: 'highlight',
+                    seriesIndex: 0,
+                    dataIndex: currentIndex
+                });
+
+                // 5. 联动显示该位置的 Tooltip 浮窗
+                chartStatus.dispatchAction({
+                    type: 'showTip',
+                    seriesIndex: 0,
+                    dataIndex: currentIndex
+                });
+
+            }, 2500); // 2.5 秒轮播切换一次
+        }
+
+        // 初始化完成后开始轮播
+        startRotation();
+
+        // 当鼠标划入图表时，清除/暂停高亮行为，避免影响用户的主动交互
+        chartStatus.on('mouseover', (e) => {
+            // 停止当前所有高亮，按鼠标指针位置为准
+            for (let i = 0; i < dataLength; i++) {
+                if (i !== e.dataIndex) {
+                    chartStatus.dispatchAction({ type: 'downplay', seriesIndex: 0, dataIndex: i });
+                }
+            }
+        });
+
+        // 3. OEE 历史趋势折线图
+        const chartLine = echarts.init(document.getElementById('chart-line'));
+        chartLine.setOption({
+            tooltip: { trigger: 'axis' },
+            grid: { top: '15%', bottom: '15%', left: '10%', right: '5%' },
+            xAxis: {
+                type: 'category',
+                data: ['周一', '周二', '周三', '周四', '周五', '今日'],
+                axisLine: { lineStyle: { color: '#374151' } },
+                axisLabel: { color: '#9ca3af' }
+            },
+            yAxis: {
+                type: 'value',
+                min: 70,
+                max: 100,
+                axisLine: { show: false },
+                splitLine: { lineStyle: { color: 'rgba(55, 65, 81, 0.3)' } },
+                axisLabel: { color: '#9ca3af' }
+            },
+            series: [{
+                name: 'OEE 趋势',
+                data: [78.5, 79.2, 82.1, 80.4, 83.0, 81.2],
+                type: 'line',
+                smooth: true,
+                itemStyle: { color: '#00b4d8' },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(0, 180, 216, 0.4)' },
+                        { offset: 1, color: 'rgba(0, 180, 216, 0)' }
+                    ])
+                }
+            }]
+        });
+
+        // 4. 六大损失柱状图（横向）
+        const chartLoss = echarts.init(document.getElementById('chart-loss'));
+        chartLoss.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { top: '5%', bottom: '10%', left: '25%', right: '8%' },
+            xAxis: {
+                type: 'value',
+                axisLine: { show: false },
+                splitLine: { lineStyle: { color: 'rgba(55, 65, 81, 0.3)' } },
+                axisLabel: { color: '#9ca3af', fontSize: 10 }
+            },
+            yAxis: {
+                type: 'category',
+                data: ['故障损失', '设置调整', '工器具换模', '小停机空转', '速度降低', '废品缺陷'],
+                axisLine: { lineStyle: { color: '#374151' } },
+                axisLabel: { color: '#9ca3af', fontSize: 10 }
+            },
+            series: [{
+                name: '损失时间(分钟)',
+                type: 'bar',
+                data: [120, 85, 60, 45, 30, 15],
+                itemStyle: {
+                    color: function(params) {
+                        const colorList = ['#ef4444', '#f97316', '#f59e0b', '#3b82f6', '#06b6d4', '#10b981'];
+                        return colorList[params.dataIndex]
+                    },
+                    borderRadius: [0, 4, 4, 0]
+                }
+            }]
+        });
+
+        // 页面缩放自适应
+        window.addEventListener('resize', () => {
+            chartOee.resize();
+            chartStatus.resize();
+            chartLine.resize();
+            chartLoss.resize();
+        });
+
+        // 系统时间更新
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('current-time').innerText = `系统时间：${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+        }, 1000);
+    </script>
+</body>
+</html>
