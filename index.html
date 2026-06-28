@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TPM 全面生产维护可视化大屏</title>
+    <title>TPM 整线全面生产维护可视化大屏</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
         /* 基础样式复位 */
@@ -172,10 +172,10 @@
         .kpi-value.red { color: #ff4d4f; text-shadow: 0 0 10px rgba(255,77,79,0.2); }
 
         /* ==================================================== */
-        /* 设备主体局部容器优化：极限放大图片尺寸 */
+        /* 设备主体局部容器优化：安全放大与测点精准锚定 */
         /* ==================================================== */
         .production-line-card {
-            flex: 1.8 !important; /* 深度提升中央下方孪生面板的垂直可视高度占比 */
+            flex: 1.8 !important; 
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -185,31 +185,29 @@
             background-size: 20px 20px;
         }
         
+        /* 视口容器：使用等比自适应保障点位不偏移 */
         .image-viewport {
             position: relative;
             flex: 1;
             width: 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            display: inline-block;
         }
 
         .hologram-asset {
-            width: 100%; /* 图片宽度拉满 */
-            height: 100%; /* 图片高度拉满 */
-            object-fit: contain; /* 智能适应比例，使设备主体极限放大 */
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             pointer-events: none;
-            filter: invert(1) hue-rotate(180deg) contrast(1.25) brightness(1); /* 优化对比度，让大图线条更鲜明 */
+            filter: invert(1) hue-rotate(180deg) contrast(1.25) brightness(1); 
             mix-blend-mode: screen; 
-            opacity: 0.85; /* 轻微提升设备高光透明度，增强视觉震撼力 */
+            opacity: 0.85;
         }
 
         /* 测点故障警报基类 */
         .alarm-pointer {
             position: absolute;
-            width: 14px; /* 随着图片放大，轻微增大测点粒径 */
+            width: 14px; 
             height: 14px;
             border-radius: 50%;
             cursor: pointer;
@@ -261,7 +259,7 @@
             z-index: 21;
         }
 
-        /* 针对大图视角进行重校准的测点绝对坐标系 */
+        /* 自适应重构后的故障点坐标映射 */
         #node灌装 { top: 48%; left: 30%; }
         #tag灌装 { top: 41%; left: 27%; }
 
@@ -352,9 +350,9 @@
 
     <div class="header">
         <div class="header-left">
-            <span>整线群组：制二生产车间</span>
+            <span>整线群组：苏州生产车间</span>
         </div>
-        <div class="header-title">TPM 智能生产维护大屏</div>
+        <div class="header-title">整线 TPM 智能生产维护大屏</div>
         <div class="header-right">
             <span class="status-dot"></span>
             <span class="connection-status" id="connStatus">飞书多维表格已连接</span>
@@ -379,14 +377,14 @@
             <div class="kpi-container">
                 <div class="kpi-block">
                     <div class="kpi-label">在线运行设备台数</div>
-                    <div class="kpi-value green" id="kpiRun">36</div>
+                    <div class="kpi-value green" id="kpiRun">6</div>
                 </div>
                 <div class="kpi-block">
                     <div class="kpi-label">今日待结故障工单</div>
                     <div class="kpi-value red" id="kpiRepair">1</div>
                 </div>
                 <div class="kpi-block">
-                    <div class="kpi-label">整线 PM 计划达标率</div>
+                    <div class="kpi-label">包装整线 PM 计划达标率</div>
                     <div class="kpi-value" id="kpiPm">98.2%</div>
                 </div>
             </div>
@@ -397,9 +395,9 @@
             </div>
 
             <div class="card production-line-card">
-                <div class="card-title">整线物理空间映射</div>
+                <div class="card-title">包装全自动化整线物理空间映射孪生区</div>
                 <div class="image-viewport">
-                    <img src="2d9a18af6b59a449fc332d0044cdb433.jpg" class="hologram-asset" alt="设备主体">
+                    <img src="./2d9a18af6b59a449fc332d0044cdb433.jpg" class="hologram-asset" alt="设备全景线框图">
                     
                     <div class="alarm-pointer red-alert" id="node灌装"></div>
                     <div class="node-tag" id="tag灌装">01号灌装机：气缸卡阻</div>
