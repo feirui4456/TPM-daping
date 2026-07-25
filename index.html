@@ -19,7 +19,6 @@
             height: 100vh;
             overflow: hidden;
             background-color: #030814;
-            /* 采用类似智慧城市风格的科技蓝暗色渐变与网格空间背景 */
             background-image: 
                 radial-gradient(circle at 50% 50%, rgba(0, 162, 255, 0.12) 0%, transparent 70%),
                 linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
@@ -42,7 +41,7 @@
             padding: 0 24px;
             position: relative;
             z-index: 100;
-            overflow: hidden; /* 防止流动光效超出边界 */
+            overflow: hidden;
         }
 
         /* 顶部动态流动光效线条 */
@@ -66,12 +65,8 @@
         }
 
         @keyframes flowLight {
-            0% {
-                left: -100%;
-            }
-            100% {
-                left: 100%;
-            }
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .header-title {
@@ -130,7 +125,7 @@
             font-weight: bold;
         }
 
-        /* 核心网格布局：左右两列面板 + 中间 3D 空间与下置表格 */
+        /* 核心网格布局 */
         .dashboard-container {
             width: 100%;
             height: calc(100vh - 60px);
@@ -213,7 +208,7 @@
             flex: 1;
             width: 100%;
             height: 100%;
-            min-height: 0; /* 关键：防止 Flex 子元素把卡片撑爆 */
+            min-height: 0;
         }
 
         .stat-ring-grid {
@@ -233,7 +228,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
         }
 
         .ring-value {
@@ -258,7 +252,6 @@
             height: 100%;
         }
 
-        /* 上半部分：中央全息物理孪生区域 */
         .center-top-twin {
             flex: 1.5;
             width: 100%;
@@ -266,20 +259,17 @@
             border-radius: 6px;
             overflow: hidden;
             border: 1px solid rgba(0, 240, 255, 0.2);
-            /* 底部科技蓝光晕基底 */
             background: radial-gradient(circle at 50% 55%, rgba(0, 180, 255, 0.18) 0%, rgba(2, 8, 20, 0.95) 75%);
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* 下半部分：飞书日志板块 */
         .center-bottom-log {
             flex: 1;
             min-height: 180px;
         }
 
-        /* 中央悬浮 KPI 模块 */
         .floating-kpi-panel {
             position: absolute;
             top: 10px;
@@ -328,7 +318,6 @@
         .kpi-sub-item .label { color: #a3b8cc; }
         .kpi-sub-item .val { color: #00f0ff; font-weight: bold; }
 
-        /* 全息背景图 */
         .twin-bg-image {
             width: 95%;
             height: 95%;
@@ -338,7 +327,6 @@
             opacity: 0.9;
         }
 
-        /* 悬浮 3D 节点指示器 (Pins) */
         .spatial-tag {
             position: absolute;
             display: flex;
@@ -389,12 +377,11 @@
             white-space: nowrap;
         }
 
-        /* 节点锚点位置 */
         #tag-filling { top: 38%; left: 32%; }
         #tag-labeling { top: 48%; left: 58%; }
         #tag-packing { top: 68%; left: 72%; }
 
-        /* 飞书日志表格与滚动 */
+        /* 飞书日志表格与无缝滚动 */
         .table-container {
             width: 100%;
             height: calc(100% - 28px);
@@ -472,15 +459,15 @@
     <!-- 顶部标题栏 -->
     <div class="header">
         <div class="header-left">
-            <span>整线车间：苏州智能三车间</span>
-            <span class="status-badge"><span class="status-dot"></span> 飞书多维表格已联机</span>
+            <span>整线车间：苏州智能二厂</span>
+            <span class="status-badge"><span class="status-dot"></span> GitHub Actions 已联机</span>
         </div>
         <div class="header-title">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#00F0FF" stroke-width="2"/><path d="M2 17L12 22L22 17" stroke="#00F0FF" stroke-width="2"/><path d="M2 12L12 17L22 12" stroke="#00F0FF" stroke-width="2"/></svg>
             TPM 智能全面生产维护可视化大屏
         </div>
         <div class="header-right">
-            <span class="time-text" id="clockText">2026-07-25 17:30:00</span>
+            <span class="time-text" id="clockText">--</span>
         </div>
     </div>
 
@@ -491,8 +478,8 @@
         <div class="side-column">
             <div class="card-panel" style="flex: 1;">
                 <div class="panel-header">
-                    <span class="panel-title"> OEE 实时综合效率</span>
-                    <span class="panel-sub-tag">实时数据</span>
+                    <span class="panel-title">整线 OEE 实时综合效率</span>
+                    <span class="panel-sub-tag">数据驱动</span>
                 </div>
                 <div id="oeeChart" class="chart-box"></div>
             </div>
@@ -514,30 +501,29 @@
             </div>
         </div>
 
-        <!-- 中间列: 上方全息模型 + 下方飞书流水实时日志 -->
+        <!-- 中间列 -->
         <div class="center-column">
-            <!-- 1. 中央上半部分：全息 3D 厂房视图 -->
+            <!-- 上半部分：3D 孪生空间 -->
             <div class="center-top-twin">
                 <div class="floating-kpi-panel">
                     <div class="floating-kpi-title">今日事件总数</div>
-                    <div class="floating-kpi-num" id="kpiEventNum">284</div>
+                    <div class="floating-kpi-num" id="kpiEventNum">--</div>
                     <div class="kpi-sub-list">
                         <div class="kpi-sub-item">
                             <span class="label">在线设备</span>
-                            <span class="val" id="kpiRunDev">16 台</span>
+                            <span class="val" id="kpiRunDev">--</span>
                         </div>
                         <div class="kpi-sub-item">
                             <span class="label">待修工单</span>
-                            <span class="val" style="color:#ff4d4f;" id="kpiRepairDev">1 单</span>
+                            <span class="val" style="color:#ff4d4f;" id="kpiRepairDev">--</span>
                         </div>
                         <div class="kpi-sub-item">
                             <span class="label">计划达标率</span>
-                            <span class="val" style="color:#00ff87;">98.5%</span>
+                            <span class="val" style="color:#00ff87;" id="kpiTargetRate">--</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 全息融底图像 -->
                 <img src="./2d9a18af6b59a449fc332d0044cdb433.jpg" class="twin-bg-image" alt="设备全景空间映射">
                 
                 <div class="spatial-tag alert" id="tag-filling">
@@ -556,11 +542,11 @@
                 </div>
             </div>
 
-            <!-- 2. 中央下半部分：飞书流水实时日志板块 -->
+            <!-- 下半部分：飞书日志流水 -->
             <div class="card-panel center-bottom-log">
                 <div class="panel-header">
                     <span class="panel-title">飞书流水实时日志</span>
-                    <span class="panel-sub-tag">无缝同步</span>
+                    <span class="panel-sub-tag">自动同步</span>
                 </div>
                 <div class="table-container">
                     <div class="table-head">
@@ -569,48 +555,8 @@
                         <div>最新触发事件</div>
                     </div>
                     <div class="table-body-wrapper">
-                        <div class="table-scroll-list">
-                            <div class="table-row">
-                                <div>01号 灌装机</div>
-                                <div><span class="badge-status red">紧急故障</span></div>
-                                <div>灌装阀升降气缸卡阻</div>
-                            </div>
-                            <div class="table-row">
-                                <div>02号 吹瓶机</div>
-                                <div><span class="badge-status orange">计划保养</span></div>
-                                <div>加热箱反光片清洁</div>
-                            </div>
-                            <div class="table-row">
-                                <div>03号 瓶胚机</div>
-                                <div><span class="badge-status orange">预警</span></div>
-                                <div>液压油滤芯压差过高</div>
-                            </div>
-                            <div class="table-row">
-                                <div>04号 套标机</div>
-                                <div><span class="badge-status red">停机</span></div>
-                                <div>切刀传感器未能感应</div>
-                            </div>
-                            <div class="table-row">
-                                <div>05号 贴标机</div>
-                                <div><span class="badge-status green">运行中</span></div>
-                                <div>转盘伺服马达平稳运行</div>
-                            </div>
-                            <!-- 副本用于无缝连贯滚动 -->
-                            <div class="table-row">
-                                <div>01号 灌装机</div>
-                                <div><span class="badge-status red">紧急故障</span></div>
-                                <div>灌装阀升降气缸卡阻</div>
-                            </div>
-                            <div class="table-row">
-                                <div>02号 吹瓶机</div>
-                                <div><span class="badge-status orange">计划保养</span></div>
-                                <div>加热箱反光片清洁</div>
-                            </div>
-                            <div class="table-row">
-                                <div>03号 瓶胚机</div>
-                                <div><span class="badge-status orange">预警</span></div>
-                                <div>液压油滤芯压差过高</div>
-                            </div>
+                        <div class="table-scroll-list" id="logScrollList">
+                            <!-- 动态加载飞书日志行 -->
                         </div>
                     </div>
                 </div>
@@ -626,11 +572,11 @@
                 </div>
                 <div class="stat-ring-grid">
                     <div class="stat-ring-item">
-                        <div class="ring-value">180h</div>
+                        <div class="ring-value" id="kpiMtbf">180h</div>
                         <div class="ring-label">MTBF间隔</div>
                     </div>
                     <div class="stat-ring-item">
-                        <div class="ring-value" style="color:#ff4d4f;">1.2h</div>
+                        <div class="ring-value" style="color:#ff4d4f;" id="kpiMttr">1.2h</div>
                         <div class="ring-label">MTTR修复</div>
                     </div>
                     <div class="stat-ring-item">
@@ -666,7 +612,7 @@
 
     <!-- 逻辑控制脚本 -->
     <script>
-        // 1. 实时时钟更新
+        // 1. 实时顶部时钟
         function updateClock() {
             const now = new Date();
             const y = now.getFullYear();
@@ -680,12 +626,50 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 2. 初始化图表 A: OEE 综合仪表
+        // 2. 初始化所有 ECharts 实例
         const oeeChart = echarts.init(document.getElementById('oeeChart'));
-        const oeeOption = {
-            tooltip: { formatter: '{a} <br/>{b} : {c}%' },
-            series: [
-                {
+        const paretoChart = echarts.init(document.getElementById('paretoChart'));
+        const monthlyTrendChart = echarts.init(document.getElementById('monthlyTrendChart'));
+        const mtbfChart = echarts.init(document.getElementById('mtbfChart'));
+        const structureRingChart = echarts.init(document.getElementById('structureRingChart'));
+
+        // 3. 核心：异步从 ./data.json 读取数据并渲染界面
+        async function loadDashboardData() {
+            try {
+                // 加时间戳 ?t= 防止浏览器走强缓存
+                const response = await fetch('./data.json?t=' + Date.now());
+                if (!response.ok) throw new Error('无法获取 data.json');
+                
+                const data = await response.json();
+                
+                // 执行各组件渲染
+                renderKPI(data.kpi);
+                renderOEE(data.kpi ? data.kpi.oeeValue : 0);
+                renderPareto(data.pareto);
+                renderMonthlyTrend(data.monthlyTrend);
+                renderMTBF(data.mtbf);
+                renderStructure(data.structure);
+                renderLogs(data.logs);
+
+                console.log('✅ 大屏最新数据同步完成！');
+            } catch (err) {
+                console.error('❌ 加载 data.json 出错:', err);
+            }
+        }
+
+        // --- 具体组件渲染函数 ---
+        function renderKPI(kpi) {
+            if (!kpi) return;
+            if (kpi.eventNum) document.getElementById('kpiEventNum').innerText = kpi.eventNum;
+            if (kpi.runDev) document.getElementById('kpiRunDev').innerText = kpi.runDev;
+            if (kpi.repairDev) document.getElementById('kpiRepairDev').innerText = kpi.repairDev;
+            if (kpi.targetRate) document.getElementById('kpiTargetRate').innerText = kpi.targetRate;
+        }
+
+        function renderOEE(val) {
+            oeeChart.setOption({
+                tooltip: { formatter: '{a} <br/>{b} : {c}%' },
+                series: [{
                     name: 'OEE',
                     type: 'gauge',
                     startAngle: 200,
@@ -713,11 +697,7 @@
                     title: {
                         show: true,
                         offsetCenter: [0, '35%'],
-                        textStyle: {
-                            color: '#8da4c4',
-                            fontSize: 11,
-                            fontWeight: 'normal'
-                        }
+                        textStyle: { color: '#8da4c4', fontSize: 11, fontWeight: 'normal' }
                     },
                     detail: {
                         valueAnimation: true,
@@ -727,174 +707,175 @@
                         fontWeight: 'bold',
                         offsetCenter: [0, '-10%']
                     },
-                    data: [{ value: 85.7, name: '综合效率' }]
-                }
-            ]
-        };
-        oeeChart.setOption(oeeOption);
+                    data: [{ value: val, name: '综合效率' }]
+                }]
+            });
+        }
 
-        // 3. 初始化图表 B: 停机原因帕累托图
-        const paretoChart = echarts.init(document.getElementById('paretoChart'));
-        const paretoOption = {
-            grid: { top: '22%', bottom: '15%', left: '10%', right: '10%' },
-            tooltip: { trigger: 'axis' },
-            xAxis: {
-                type: 'category',
-                data: ['电气开路', '气压低', '卡料拉标', '换型', '清洗'],
-                axisLine: { lineStyle: { color: 'rgba(0,240,255,0.3)' } },
-                axisLabel: { color: '#a3b8cc', fontSize: 10 }
-            },
-            yAxis: [
-                { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }, axisLabel: { color: '#8da4c4', fontSize: 10 } },
-                { type: 'value', max: 100, splitLine: { show: false }, axisLabel: { formatter: '{value}%', color: '#8da4c4', fontSize: 10 } }
-            ],
-            series: [
-                {
-                    name: '停机(h)',
-                    type: 'bar',
-                    barWidth: '35%',
-                    itemStyle: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            { offset: 0, color: '#00f0ff' },
-                            { offset: 1, color: '#003366' }
-                        ]),
-                        borderRadius: [3, 3, 0, 0]
-                    },
-                    data: [35, 24, 15, 11, 4]
+        function renderPareto(pareto) {
+            if (!pareto) return;
+            paretoChart.setOption({
+                grid: { top: '22%', bottom: '15%', left: '10%', right: '10%' },
+                tooltip: { trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: pareto.categories || [],
+                    axisLine: { lineStyle: { color: 'rgba(0,240,255,0.3)' } },
+                    axisLabel: { color: '#a3b8cc', fontSize: 10 }
                 },
-                {
-                    name: '累计%',
-                    type: 'line',
-                    yAxisIndex: 1,
-                    smooth: true,
-                    itemStyle: { color: '#ffeb3b' },
-                    lineStyle: { width: 2 },
-                    data: [39.3, 66.3, 83.1, 95.5, 100]
-                }
-            ]
-        };
-        paretoChart.setOption(paretoOption);
-
-        // 4. 初始化图表 C: 月度点检与趋势图 (重点调整下边距，保证显示完整)
-        const monthlyTrendChart = echarts.init(document.getElementById('monthlyTrendChart'));
-        const monthlyTrendOption = {
-            grid: { top: '18%', bottom: '15%', left: '8%', right: '5%', containLabel: true },
-            tooltip: { trigger: 'axis' },
-            xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
-                axisLine: { lineStyle: { color: 'rgba(0,240,255,0.3)' } },
-                axisLabel: { color: '#8da4c4', fontSize: 10 }
-            },
-            yAxis: {
-                type: 'value',
-                splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
-                axisLabel: { color: '#8da4c4', fontSize: 10 }
-            },
-            series: [
-                {
-                    name: '故障率',
-                    type: 'line',
-                    smooth: true,
-                    showSymbol: false,
-                    lineStyle: { width: 3, color: '#00f0ff' },
-                    areaStyle: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            { offset: 0, color: 'rgba(0, 240, 255, 0.4)' },
-                            { offset: 1, color: 'rgba(0, 240, 255, 0)' }
-                        ])
+                yAxis: [
+                    { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }, axisLabel: { color: '#8da4c4', fontSize: 10 } },
+                    { type: 'value', max: 100, splitLine: { show: false }, axisLabel: { formatter: '{value}%', color: '#8da4c4', fontSize: 10 } }
+                ],
+                series: [
+                    {
+                        name: '停机(h)',
+                        type: 'bar',
+                        barWidth: '35%',
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#00f0ff' },
+                                { offset: 1, color: '#003366' }
+                            ]),
+                            borderRadius: [3, 3, 0, 0]
+                        },
+                        data: pareto.hours || []
                     },
-                    data: [12, 18, 9, 14, 8, 5, 3]
-                }
-            ]
-        };
-        monthlyTrendChart.setOption(monthlyTrendOption);
+                    {
+                        name: '累计%',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        smooth: true,
+                        itemStyle: { color: '#ffeb3b' },
+                        lineStyle: { width: 2 },
+                        data: pareto.ratios || []
+                    }
+                ]
+            });
+        }
 
-        // 5. 初始化图表 D: 各设备 MTBF / MTTR
-        const mtbfChart = echarts.init(document.getElementById('mtbfChart'));
-        const mtbfOption = {
-            grid: { top: '18%', bottom: '12%', left: '8%', right: '5%', containLabel: true },
-            tooltip: { trigger: 'axis' },
-            xAxis: {
-                type: 'category',
-                data: ['瓶胚', '吹瓶', '灌装', '套标', '包装'],
-                axisLine: { lineStyle: { color: 'rgba(0,240,255,0.3)' } },
-                axisLabel: { color: '#8da4c4', fontSize: 10 }
-            },
-            yAxis: {
-                type: 'value',
-                splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
-                axisLabel: { color: '#8da4c4', fontSize: 10 }
-            },
-            series: [
-                {
-                    name: 'MTBF',
-                    type: 'bar',
-                    barWidth: '25%',
-                    itemStyle: { color: '#00ff87', borderRadius: [2, 2, 0, 0] },
-                    data: [180, 110, 95, 75, 140]
+        function renderMonthlyTrend(trend) {
+            if (!trend) return;
+            monthlyTrendChart.setOption({
+                grid: { top: '18%', bottom: '15%', left: '8%', right: '5%', containLabel: true },
+                tooltip: { trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: trend.months || [],
+                    axisLine: { lineStyle: { color: 'rgba(0,240,255,0.3)' } },
+                    axisLabel: { color: '#8da4c4', fontSize: 10 }
                 },
-                {
-                    name: 'MTTR',
-                    type: 'bar',
-                    barWidth: '25%',
-                    itemStyle: { color: '#ff4d4f', borderRadius: [2, 2, 0, 0] },
-                    data: [12, 21, 28, 19, 9]
-                }
-            ]
-        };
-        mtbfChart.setOption(mtbfOption);
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
+                    axisLabel: { color: '#8da4c4', fontSize: 10 }
+                },
+                series: [
+                    {
+                        name: '故障率',
+                        type: 'line',
+                        smooth: true,
+                        showSymbol: false,
+                        lineStyle: { width: 3, color: '#00f0ff' },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(0, 240, 255, 0.4)' },
+                                { offset: 1, color: 'rgba(0, 240, 255, 0)' }
+                            ])
+                        },
+                        data: trend.rates || []
+                    }
+                ]
+            });
+        }
 
-        // 6. 初始化图表 E: 设备故障类型结构占比 (调优中心与半径)
-        const structureRingChart = echarts.init(document.getElementById('structureRingChart'));
-        const structureRingOption = {
-            tooltip: { 
-                trigger: 'item', 
-                formatter: '{a} <br/>{b}: {c} ({d}%)' 
-            },
-            legend: { 
-                orient: 'vertical', 
-                right: '2%', 
-                top: 'center', 
-                itemWidth: 8,
-                itemHeight: 8,
-                textStyle: { color: '#8da4c4', fontSize: 10 } 
-            },
-            series: [
-                {
-                    name: '故障类型',
-                    type: 'pie',
-                    radius: ['40%', '68%'],
-                    center: ['35%', '50%'],
-                    avoidLabelOverlap: false,
-                    label: { show: false },
-                    emphasis: {
-                        label: {
-                            show: true,
-                            fontSize: 11,
-                            fontWeight: 'bold',
-                            color: '#fff'
-                        }
+        function renderMTBF(mtbf) {
+            if (!mtbf) return;
+            mtbfChart.setOption({
+                grid: { top: '18%', bottom: '12%', left: '8%', right: '5%', containLabel: true },
+                tooltip: { trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: mtbf.devices || [],
+                    axisLine: { lineStyle: { color: 'rgba(0,240,255,0.3)' } },
+                    axisLabel: { color: '#8da4c4', fontSize: 10 }
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
+                    axisLabel: { color: '#8da4c4', fontSize: 10 }
+                },
+                series: [
+                    {
+                        name: 'MTBF',
+                        type: 'bar',
+                        barWidth: '25%',
+                        itemStyle: { color: '#00ff87', borderRadius: [2, 2, 0, 0] },
+                        data: mtbf.mtbfData || []
                     },
-                    data: [
-                        { value: 580, name: '机械磨损', itemStyle: { color: '#00f0ff' } },
-                        { value: 800, name: '电气故障', itemStyle: { color: '#0066ff' } },
-                        { value: 300, name: '气路压降', itemStyle: { color: '#00ff87' } },
-                        { value: 200, name: '人为误操作', itemStyle: { color: '#ffeb3b' } }
-                    ]
-                }
-            ]
-        };
-        structureRingChart.setOption(structureRingOption);
+                    {
+                        name: 'MTTR',
+                        type: 'bar',
+                        barWidth: '25%',
+                        itemStyle: { color: '#ff4d4f', borderRadius: [2, 2, 0, 0] },
+                        data: mtbf.mttrData || []
+                    }
+                ]
+            });
+        }
 
-        // 7. 实时数据微动与自适应防抖
-        setInterval(() => {
-            const randomOEE = (84 + Math.random() * 3).toFixed(1);
-            oeeOption.series[0].data[0].value = randomOEE;
-            oeeChart.setOption(oeeOption, true);
-        }, 4000);
+        function renderStructure(structure) {
+            if (!structure) return;
+            structureRingChart.setOption({
+                tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
+                legend: { 
+                    orient: 'vertical', 
+                    right: '2%', 
+                    top: 'center', 
+                    itemWidth: 8,
+                    itemHeight: 8,
+                    textStyle: { color: '#8da4c4', fontSize: 10 } 
+                },
+                series: [
+                    {
+                        name: '故障类型',
+                        type: 'pie',
+                        radius: ['40%', '68%'],
+                        center: ['35%', '50%'],
+                        avoidLabelOverlap: false,
+                        label: { show: false },
+                        emphasis: {
+                            label: { show: true, fontSize: 11, fontWeight: 'bold', color: '#fff' }
+                        },
+                        data: structure
+                    }
+                ]
+            });
+        }
 
+        function renderLogs(logs) {
+            const container = document.getElementById('logScrollList');
+            if (!container || !logs || !logs.length) return;
+
+            // 拼接双份数据以支持流畅无缝循环滚动
+            const renderList = [...logs, ...logs];
+            container.innerHTML = renderList.map(item => `
+                <div class="table-row">
+                    <div>${item.device}</div>
+                    <div><span class="badge-status ${item.status}">${item.statusText}</span></div>
+                    <div>${item.event}</div>
+                </div>
+            `).join('');
+        }
+
+        // 4. 页面首次加载与定时轮询（每 60 秒轮询一次 json 文件是否有更新）
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDashboardData();
+            setInterval(loadDashboardData, 60000);
+        });
+
+        // 5. 窗口自适应
         window.addEventListener('resize', () => {
             oeeChart.resize();
             paretoChart.resize();
