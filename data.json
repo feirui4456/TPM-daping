@@ -1,0 +1,36 @@
+{
+  "kpi": {
+    "eventNum": "2,984",
+    "runDev": "6 台",
+    "repairDev": "1 单",
+    "targetRate": "98.5%",
+    "oeeValue": 85.7
+  },
+  "pareto": {
+    "categories": ["电气开路", "气压低", "卡料拉标", "换型", "清洗"],
+    "hours": [35, 24, 15, 11, 4],
+    "ratios": [39.3, 66.3, 83.1, 95.5, 100]
+  },
+  "monthlyTrend": {
+    "months": ["1月", "2月", "3月", "4月", "5月", "6月", "7月"],
+    "rates": [12, 18, 9, 14, 8, 5, 3]
+  },
+  "mtbf": {
+    "devices": ["瓶胚", "吹瓶", "灌装", "套标", "包装"],
+    "mtbfData": [180, 110, 95, 75, 140],
+    "mttrData": [12, 21, 28, 19, 9]
+  },
+  "structure": [
+    { "value": 580, "name": "机械磨损" },
+    { "value": 800, "name": "电气故障" },
+    { "value": 300, "name": "气路压降" },
+    { "value": 200, "name": "人为误操作" }
+  ],
+  "logs": [
+    { "device": "01号 灌装机", "status": "red", "statusText": "紧急故障", "event": "灌装阀升降气缸卡阻" },
+    { "device": "02号 吹瓶机", "status": "orange", "statusText": "计划保养", "event": "加热箱反光片清洁" },
+    { "device": "03号 瓶胚机", "status": "orange", "statusText": "预警", "event": "液压油滤芯压差过高" },
+    { "device": "04号 套标机", "status": "red", "statusText": "停机", "event": "切刀传感器未能感应" },
+    { "device": "05号 贴标机", "status": "green", "statusText": "运行中", "event": "转盘伺服马达平稳运行" }
+  ]
+}
