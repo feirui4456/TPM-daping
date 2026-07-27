@@ -257,12 +257,13 @@
             width: 100%;
             position: relative;
             border-radius: 6px;
-            overflow: hidden;
+            overflow: hidden; /* 防止图片放大溢出容器 */
             border: 1px solid rgba(0, 240, 255, 0.2);
             background: radial-gradient(circle at 50% 55%, rgba(0, 180, 255, 0.18) 0%, rgba(2, 8, 20, 0.95) 75%);
             display: flex;
             align-items: center;
             justify-content: center;
+            user-select: none; /* 防止缩放拖拽选中视觉污染 */
         }
 
         .center-bottom-log {
@@ -282,6 +283,7 @@
             padding: 10px 14px;
             width: 240px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 240, 255, 0.15);
+            pointer-events: none; /* 穿透鼠标操作，避免挡住图片的滚轮事件 */
         }
 
         .floating-kpi-title {
@@ -322,9 +324,16 @@
             width: 95%;
             height: 95%;
             object-fit: contain;
-            /* 移除 invert(1) 和 mix-blend-mode，保留微调的发光和对比度 */
             filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.4));
             opacity: 0.9;
+            transform-origin: center center; /* 从中心点缩放 */
+            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1); /* 跟手缩放平滑动画 */
+            cursor: grab;
+        }
+
+        /* 自动恢复时的慢平滑动画 */
+        .twin-bg-image.resetting {
+            transition: transform 0.6s ease-in-out !important;
         }
 
         .spatial-tag {
@@ -504,7 +513,7 @@
         <!-- 中间列 -->
         <div class="center-column">
             <!-- 上半部分：3D 孪生空间 -->
-            <div class="center-top-twin">
+            <div class="center-top-twin" id="twinContainer">
                 <div class="floating-kpi-panel">
                     <div class="floating-kpi-title">今日事件总数</div>
                     <div class="floating-kpi-num" id="kpiEventNum">--</div>
@@ -524,7 +533,7 @@
                     </div>
                 </div>
 
-                <img src="./2d9a18af6b59a449fc332d0044cdb433.png" class="twin-bg-image" alt="设备全景空间映射">
+                <img id="twinImg" src="./2d9a18af6b59a449fc332d0044cdb433.png" class="twin-bg-image" alt="设备全景空间映射">
                 
                 <div class="spatial-tag alert" id="tag-filling">
                     <div class="tag-icon">!</div>
@@ -869,13 +878,56 @@
             `).join('');
         }
 
-        // 4. 页面首次加载与定时轮询（每 60 秒轮询一次 json 文件是否有更新）
+        // 4. 孪生空间图片滚轮缩放与 5 秒自动平滑复位
+        function initTwinImageZoom() {
+            const container = document.getElementById('twinContainer');
+            const img = document.getElementById('twinImg');
+            if (!container || !img) return;
+
+            let scale = 1;
+            const minScale = 0.5;
+            const maxScale = 3.5;
+            const step = 0.15;
+            let resetTimer = null;
+
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault(); // 阻止整个大屏跟随滑动
+
+                // 如果有倒计时正在等待复位，清空并重新计算
+                if (resetTimer) {
+                    clearTimeout(resetTimer);
+                    resetTimer = null;
+                }
+
+                img.classList.remove('resetting');
+
+                // 判断缩放方向
+                if (e.deltaY < 0) {
+                    scale = Math.min(maxScale, scale + step);
+                } else {
+                    scale = Math.max(minScale, scale - step);
+                }
+
+                // 实时渲染缩放
+                img.style.transform = `scale(${scale})`;
+
+                // 启动 5 秒自动恢复原始大小定时器
+                resetTimer = setTimeout(() => {
+                    scale = 1;
+                    img.classList.add('resetting'); // 开启 0.6s 的慢速平滑复位动画
+                    img.style.transform = 'scale(1)';
+                }, 5000);
+            }, { passive: false });
+        }
+
+        // 5. 页面首次加载与定时轮询（每 60 秒轮询一次 json 文件是否有更新）
         window.addEventListener('DOMContentLoaded', () => {
             loadDashboardData();
+            initTwinImageZoom(); // 初始化图片缩放防抖逻辑
             setInterval(loadDashboardData, 60000);
         });
 
-        // 5. 窗口自适应
+        // 6. 窗口自适应
         window.addEventListener('resize', () => {
             oeeChart.resize();
             paretoChart.resize();
