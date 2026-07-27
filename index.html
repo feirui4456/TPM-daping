@@ -322,6 +322,8 @@
             width: 95%;
             height: 95%;
             object-fit: contain;
+            /* 移除 invert(1) 和 mix-blend-mode，保留微调的发光和对比度 */
+            filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.4));
             opacity: 0.9;
         }
 
