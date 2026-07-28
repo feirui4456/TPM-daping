@@ -264,6 +264,7 @@
             align-items: center;
             justify-content: center;
             user-select: none; /* 防止缩放拖拽选中视觉污染 */
+            cursor: grab; /* 显示抓手指针 */
         }
 
         .center-bottom-log {
@@ -283,7 +284,7 @@
             padding: 10px 14px;
             width: 240px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 240, 255, 0.15);
-            pointer-events: none; /* 穿透鼠标操作，避免挡住图片的滚轮事件 */
+            pointer-events: none; /* 穿透鼠标操作，避免挡住图片的滚轮与拖拽事件 */
         }
 
         .floating-kpi-title {
@@ -327,13 +328,13 @@
             filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.4));
             opacity: 0.9;
             transform-origin: center center; /* 从中心点缩放 */
-            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1); /* 跟手缩放平滑动画 */
-            cursor: grab;
+            transition: none; /* 实时跟手，关闭默认动画 */
+            display: block;
         }
 
         /* 自动恢复时的慢平滑动画 */
         .twin-bg-image.resetting {
-            transition: transform 0.6s ease-in-out !important;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
         }
 
         .spatial-tag {
@@ -878,52 +879,103 @@
             `).join('');
         }
 
-        // 4. 孪生空间图片滚轮缩放与 5 秒自动平滑复位
+        // 4. 孪生空间图片滚轮缩放、抓手平移与 10 秒自动平滑复位
         function initTwinImageZoom() {
             const container = document.getElementById('twinContainer');
             const img = document.getElementById('twinImg');
             if (!container || !img) return;
 
+            // 缩放与平移状态
             let scale = 1;
+            let translateX = 0;
+            let translateY = 0;
+
             const minScale = 0.5;
             const maxScale = 3.5;
             const step = 0.15;
             let resetTimer = null;
 
-            container.addEventListener('wheel', (e) => {
-                e.preventDefault(); // 阻止整个大屏跟随滑动
+            // 拖拽状态
+            let isDragging = false;
+            let startX = 0;
+            let startY = 0;
 
-                // 如果有倒计时正在等待复位，清空并重新计算
+            // 统一应用坐标和缩放变换
+            function updateTransform() {
+                img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+            }
+
+            // 启动/重置 10 秒平滑恢复定时器
+            function startResetTimer() {
                 if (resetTimer) {
                     clearTimeout(resetTimer);
                     resetTimer = null;
                 }
-
                 img.classList.remove('resetting');
 
-                // 判断缩放方向
+                resetTimer = setTimeout(() => {
+                    scale = 1;
+                    translateX = 0;
+                    translateY = 0;
+                    img.classList.add('resetting'); // 开启 0.6s 的慢速平滑复位动画
+                    updateTransform();
+                }, 10000); // 调整为 10 秒
+            }
+
+            // --- 滚轮缩放逻辑 ---
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault(); // 阻止大屏滚动
+
                 if (e.deltaY < 0) {
                     scale = Math.min(maxScale, scale + step);
                 } else {
                     scale = Math.max(minScale, scale - step);
                 }
 
-                // 实时渲染缩放
-                img.style.transform = `scale(${scale})`;
-
-                // 启动 5 秒自动恢复原始大小定时器
-                resetTimer = setTimeout(() => {
-                    scale = 1;
-                    img.classList.add('resetting'); // 开启 0.6s 的慢速平滑复位动画
-                    img.style.transform = 'scale(1)';
-                }, 5000);
+                updateTransform();
+                startResetTimer();
             }, { passive: false });
+
+            // --- 抓手拖拽平移逻辑 ---
+            container.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return; // 仅左键拖拽
+
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+
+                container.style.cursor = 'grabbing';
+                img.classList.remove('resetting');
+
+                if (resetTimer) {
+                    clearTimeout(resetTimer);
+                    resetTimer = null;
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+
+                updateTransform();
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+
+                isDragging = false;
+                container.style.cursor = 'grab';
+
+                startResetTimer(); // 松开按键后启动 10 秒计时
+            });
         }
 
         // 5. 页面首次加载与定时轮询（每 60 秒轮询一次 json 文件是否有更新）
         window.addEventListener('DOMContentLoaded', () => {
             loadDashboardData();
-            initTwinImageZoom(); // 初始化图片缩放防抖逻辑
+            initTwinImageZoom(); // 初始化图片缩放与平移拖拽逻辑
             setInterval(loadDashboardData, 60000);
         });
 
