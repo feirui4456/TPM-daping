@@ -1,20 +1,19 @@
-name: Sync Feishu Equipment Dashboard Data
+name: Feishu to GitHub Data Sync
 
 on:
-  # 支持飞书 Webhook / 自动化流程通过 API 发起触发
-  repository_dispatch:
-    types: [feishu_data_sync]
+  # 支持定时自动拉取（例如每 30 分钟同步一次）
+  schedule:
+    - cron: '*/30 * * * *'
 
-  # 支持在 GitHub Actions 页面手动运行并粘贴更新 JSON 数据
+  # 支持外部 HTTP Webhook 触发
+  repository_dispatch:
+    types: [feishu_sync]
+
+  # 支持在 GitHub Actions 界面手动点击触发
   workflow_dispatch:
-    inputs:
-      data_payload:
-        description: '请粘贴飞书同步的 JSON 数据'
-        required: false
-        default: '{}'
 
 jobs:
-  update-dashboard-data:
+  sync-data:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -28,58 +27,28 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 解析并更新设备监控 JSON 文件
-        env:
-          DISPATCH_PAYLOAD: ${{ toJson(github.event.client_payload) }}
-          INPUT_PAYLOAD: ${{ github.event.inputs.data_payload }}
+      - name: 安装依赖包
         run: |
-          python -c "
-          import os
-          import json
+          python -m pip install --upgrade pip
+          pip install requests
 
-          dispatch_raw = os.environ.get('DISPATCH_PAYLOAD', '{}')
-          input_raw = os.environ.get('INPUT_PAYLOAD', '')
+      - name: 运行 Python 脚本更新本地 data.json
+        env:
+          FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
+          FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
+        run: |
+          python sync_feishu.py
 
-          # 优先级：Api Dispatch > 手动输入
-          data = {}
-          if dispatch_raw and dispatch_raw != '{}':
-              try:
-                  data = json.loads(dispatch_raw)
-              except Exception as e:
-                  print(f'解析 API Dispatch 数据失败: {e}')
-          
-          if not data and input_raw:
-              try:
-                  data = json.loads(input_raw)
-              except Exception as e:
-                  print(f'解析手动输入的 JSON 数据失败: {e}')
-
-          # 校验字段，确保匹配工业设备监控看板的全部节点
-          required_keys = ['kpi', 'pareto', 'monthlyTrend', 'mtbf', 'structure', 'logs']
-          if data and all(k in data for k in required_keys):
-              # 确保目标保存目录存在
-              target_dir = 'data'
-              os.makedirs(target_dir, exist_ok=True)
-              
-              file_path = os.path.join(target_dir, 'dashboard.json')
-              with open(file_path, 'w', encoding='utf-8') as f:
-                  json.dump(data, f, ensure_ascii=False, indent=2)
-              print(f'✅ 数据解析成功！已更新写入到 {file_path}')
-          else:
-              missing = [k for k in required_keys if k not in data]
-              print(f'❌ 校验未通过：缺失字段 {missing} 或 Payload 为空，本次取消更新。')
-          "
-
-      - name: 提交更新到 GitHub 仓库
+      - name: 提交更新到 Git 仓库
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add data/dashboard.json
-          
+          git add data.json
+
           if git diff --staged --quiet; then
-            echo "ℹ️ 数据内容未发生变更，跳过 Commit。"
+            echo "ℹ️ 数据未发生任何变化，无需提交。"
           else
-            git commit -m "chore(data): 自动同步飞书设备监控指标数据 [skip ci]"
+            git commit -m "chore(data): 自动同步飞书最新看板数据 [skip ci]"
             git push
           fi
