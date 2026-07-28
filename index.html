@@ -44,7 +44,6 @@
             overflow: hidden;
         }
 
-        /* 顶部动态流动光效线条 */
         .header::after {
             content: '';
             position: absolute;
@@ -257,14 +256,11 @@
             width: 100%;
             position: relative;
             border-radius: 6px;
-            overflow: hidden; /* 防止图片放大溢出容器 */
+            overflow: hidden; /* 防止图片溢出容器 */
             border: 1px solid rgba(0, 240, 255, 0.2);
             background: radial-gradient(circle at 50% 55%, rgba(0, 180, 255, 0.18) 0%, rgba(2, 8, 20, 0.95) 75%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none; /* 防止缩放拖拽选中视觉污染 */
-            cursor: grab; /* 显示抓手指针 */
+            user-select: none;
+            cursor: grab;
         }
 
         .center-bottom-log {
@@ -284,7 +280,7 @@
             padding: 10px 14px;
             width: 240px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 240, 255, 0.15);
-            pointer-events: none; /* 穿透鼠标操作，避免挡住图片的滚轮与拖拽事件 */
+            pointer-events: none; /* 穿透鼠标操作 */
         }
 
         .floating-kpi-title {
@@ -321,18 +317,23 @@
         .kpi-sub-item .label { color: #a3b8cc; }
         .kpi-sub-item .val { color: #00f0ff; font-weight: bold; }
 
+        /* 修改：图片使用 absolute + 50% 绝对居中，使得 translate 移动无阻碍 */
         .twin-bg-image {
-            width: 95%;
-            height: 95%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            max-width: 90%;
+            max-height: 90%;
             object-fit: contain;
             filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.4));
             opacity: 0.9;
-            transform-origin: center center; /* 从中心点缩放 */
-            transition: none; /* 实时跟手，关闭默认动画 */
+            transform-origin: center center;
+            transition: none;
             display: block;
+            pointer-events: auto;
         }
 
-        /* 自动恢复时的慢平滑动画 */
+        /* 复位时的动画效果 */
         .twin-bg-image.resetting {
             transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
         }
@@ -391,7 +392,6 @@
         #tag-labeling { top: 48%; left: 58%; }
         #tag-packing { top: 68%; left: 72%; }
 
-        /* 飞书日志表格与无缝滚动 */
         .table-container {
             width: 100%;
             height: calc(100% - 28px);
@@ -466,7 +466,6 @@
 </head>
 <body>
 
-    <!-- 顶部标题栏 -->
     <div class="header">
         <div class="header-left">
             <span>整线车间：苏州智能三车间</span>
@@ -481,10 +480,7 @@
         </div>
     </div>
 
-    <!-- 主体三大区域 -->
     <div class="dashboard-container">
-        
-        <!-- 左侧面板列 -->
         <div class="side-column">
             <div class="card-panel" style="flex: 1;">
                 <div class="panel-header">
@@ -511,9 +507,7 @@
             </div>
         </div>
 
-        <!-- 中间列 -->
         <div class="center-column">
-            <!-- 上半部分：3D 孪生空间 -->
             <div class="center-top-twin" id="twinContainer">
                 <div class="floating-kpi-panel">
                     <div class="floating-kpi-title">今日事件总数</div>
@@ -552,7 +546,6 @@
                 </div>
             </div>
 
-            <!-- 下半部分：飞书日志流水 -->
             <div class="card-panel center-bottom-log">
                 <div class="panel-header">
                     <span class="panel-title">飞书流水实时日志</span>
@@ -565,15 +558,12 @@
                         <div>最新触发事件</div>
                     </div>
                     <div class="table-body-wrapper">
-                        <div class="table-scroll-list" id="logScrollList">
-                            <!-- 动态加载飞书日志行 -->
-                        </div>
+                        <div class="table-scroll-list" id="logScrollList"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 右侧面板列 -->
         <div class="side-column">
             <div class="card-panel" style="flex: 1.2;">
                 <div class="panel-header">
@@ -620,9 +610,8 @@
 
     </div>
 
-    <!-- 逻辑控制脚本 -->
     <script>
-        // 1. 实时顶部时钟
+        // 1. 时钟
         function updateClock() {
             const now = new Date();
             const y = now.getFullYear();
@@ -636,23 +625,21 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 2. 初始化所有 ECharts 实例
+        // 2. 初始化 ECharts 实例
         const oeeChart = echarts.init(document.getElementById('oeeChart'));
         const paretoChart = echarts.init(document.getElementById('paretoChart'));
         const monthlyTrendChart = echarts.init(document.getElementById('monthlyTrendChart'));
         const mtbfChart = echarts.init(document.getElementById('mtbfChart'));
         const structureRingChart = echarts.init(document.getElementById('structureRingChart'));
 
-        // 3. 核心：异步从 ./data.json 读取数据并渲染界面
+        // 3. 数据异步获取与渲染
         async function loadDashboardData() {
             try {
-                // 加时间戳 ?t= 防止浏览器走强缓存
                 const response = await fetch('./data.json?t=' + Date.now());
                 if (!response.ok) throw new Error('无法获取 data.json');
                 
                 const data = await response.json();
                 
-                // 执行各组件渲染
                 renderKPI(data.kpi);
                 renderOEE(data.kpi ? data.kpi.oeeValue : 0);
                 renderPareto(data.pareto);
@@ -667,7 +654,6 @@
             }
         }
 
-        // --- 具体组件渲染函数 ---
         function renderKPI(kpi) {
             if (!kpi) return;
             if (kpi.eventNum) document.getElementById('kpiEventNum').innerText = kpi.eventNum;
@@ -868,7 +854,6 @@
             const container = document.getElementById('logScrollList');
             if (!container || !logs || !logs.length) return;
 
-            // 拼接双份数据以支持流畅无缝循环滚动
             const renderList = [...logs, ...logs];
             container.innerHTML = renderList.map(item => `
                 <div class="table-row">
@@ -879,13 +864,15 @@
             `).join('');
         }
 
-        // 4. 孪生空间图片滚轮缩放、抓手平移与 10 秒自动平滑复位
+        // 4. 孪生空间图片滚轮缩放、抓手平移与 10 秒自动平滑复位（已修复拖拽卡死/无效）
         function initTwinImageZoom() {
             const container = document.getElementById('twinContainer');
             const img = document.getElementById('twinImg');
             if (!container || !img) return;
 
-            // 缩放与平移状态
+            // 禁用浏览器原生图片拖拽鬼影，这是导致拖拽不生效的主要原因
+            img.addEventListener('dragstart', (e) => e.preventDefault());
+
             let scale = 1;
             let translateX = 0;
             let translateY = 0;
@@ -895,17 +882,15 @@
             const step = 0.15;
             let resetTimer = null;
 
-            // 拖拽状态
             let isDragging = false;
-            let startX = 0;
-            let startY = 0;
+            let startMouseX = 0;
+            let startMouseY = 0;
 
-            // 统一应用坐标和缩放变换
             function updateTransform() {
-                img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+                // translate(-50%, -50%) 用于配合绝对定位居中
+                img.style.transform = `translate(calc(-50% + ${translateX}px), calc(-50% + ${translateY}px)) scale(${scale})`;
             }
 
-            // 启动/重置 10 秒平滑恢复定时器
             function startResetTimer() {
                 if (resetTimer) {
                     clearTimeout(resetTimer);
@@ -917,14 +902,17 @@
                     scale = 1;
                     translateX = 0;
                     translateY = 0;
-                    img.classList.add('resetting'); // 开启 0.6s 的慢速平滑复位动画
+                    img.classList.add('resetting');
                     updateTransform();
-                }, 10000); // 调整为 10 秒
+                }, 10000); // 10秒复位
             }
 
-            // --- 滚轮缩放逻辑 ---
+            // 初始化位置
+            updateTransform();
+
+            // 滚轮缩放
             container.addEventListener('wheel', (e) => {
-                e.preventDefault(); // 阻止大屏滚动
+                e.preventDefault();
 
                 if (e.deltaY < 0) {
                     scale = Math.min(maxScale, scale + step);
@@ -936,13 +924,13 @@
                 startResetTimer();
             }, { passive: false });
 
-            // --- 抓手拖拽平移逻辑 ---
+            // 按下鼠标开始拖拽
             container.addEventListener('mousedown', (e) => {
-                if (e.button !== 0) return; // 仅左键拖拽
+                if (e.button !== 0) return; // 仅限鼠标左键
 
                 isDragging = true;
-                startX = e.clientX - translateX;
-                startY = e.clientY - translateY;
+                startMouseX = e.clientX - translateX;
+                startMouseY = e.clientY - translateY;
 
                 container.style.cursor = 'grabbing';
                 img.classList.remove('resetting');
@@ -953,29 +941,31 @@
                 }
             });
 
+            // 拖拽中
             window.addEventListener('mousemove', (e) => {
                 if (!isDragging) return;
 
-                translateX = e.clientX - startX;
-                translateY = e.clientY - startY;
+                translateX = e.clientX - startMouseX;
+                translateY = e.clientY - startMouseY;
 
                 updateTransform();
             });
 
+            // 松动鼠标结束拖拽
             window.addEventListener('mouseup', () => {
                 if (!isDragging) return;
 
                 isDragging = false;
                 container.style.cursor = 'grab';
 
-                startResetTimer(); // 松开按键后启动 10 秒计时
+                startResetTimer();
             });
         }
 
-        // 5. 页面首次加载与定时轮询（每 60 秒轮询一次 json 文件是否有更新）
+        // 5. 页面首次加载与定时轮询
         window.addEventListener('DOMContentLoaded', () => {
             loadDashboardData();
-            initTwinImageZoom(); // 初始化图片缩放与平移拖拽逻辑
+            initTwinImageZoom();
             setInterval(loadDashboardData, 60000);
         });
 
