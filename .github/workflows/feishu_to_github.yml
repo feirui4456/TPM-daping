@@ -1,0 +1,34 @@
+name: Sync Feishu Changes to GitHub
+
+on:
+  repository_dispatch:
+    types: [feishu_updated] # 接收飞书发来的自定义事件类型
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+
+      - name: 设置 Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: 安装依赖
+        run: pip install requests
+
+      - name: 从飞书拉取最新数据并写入 JSON
+        env:
+          FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
+          FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
+        run: python fetch_from_feishu.py
+
+      - name: 自动提交更改回 GitHub 仓库
+        run: |
+          git config --global user.name "Feishu-Sync-Bot"
+          git config --global user.email "bot@feishu.com"
+          git add data.json
+          git commit -m "chore: 飞书多维表格修改自动同步 [skip ci]" || exit 0
+          git push
