@@ -331,8 +331,6 @@
             transition: none;
             display: block;
             pointer-events: auto;
-            /* 建议新增以下代码：保证高清图/矢量风格大图放极高倍数时依然清晰 */
-            image-rendering: -webkit-optimize-contrast;
         }
 
         /* 复位时的动画效果 */
@@ -880,8 +878,8 @@
             let translateY = 0;
 
             const minScale = 0.5;
-            const maxScale = 8.0;
-            const step = 0.25;
+            const maxScale = 3.5;
+            const step = 0.15;
             let resetTimer = null;
 
             let isDragging = false;
