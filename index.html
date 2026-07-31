@@ -317,7 +317,6 @@
         .kpi-sub-item .label { color: #a3b8cc; }
         .kpi-sub-item .val { color: #00f0ff; font-weight: bold; }
 
-        /* 修改：图片使用 absolute + 50% 绝对居中，使得 translate 移动无阻碍 */
         .twin-bg-image {
             position: absolute;
             top: 50%;
@@ -350,7 +349,15 @@
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
             cursor: pointer;
             z-index: 25;
-            transition: all 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease; /* 添加透明度过渡 */
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 新增：定义隐藏标签的状态类 */
+        .spatial-tag.tags-hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         .spatial-tag:hover {
@@ -864,13 +871,13 @@
             `).join('');
         }
 
-        // 4. 孪生空间图片滚轮缩放、抓手平移与 10 秒自动平滑复位（已修复拖拽卡死/无效）
+        // 4. 孪生空间图片滚轮缩放、抓手平移与标签自动隐现/复位
         function initTwinImageZoom() {
             const container = document.getElementById('twinContainer');
             const img = document.getElementById('twinImg');
+            const tags = document.querySelectorAll('.spatial-tag');
             if (!container || !img) return;
 
-            // 禁用浏览器原生图片拖拽鬼影，这是导致拖拽不生效的主要原因
             img.addEventListener('dragstart', (e) => e.preventDefault());
 
             let scale = 1;
@@ -881,14 +888,28 @@
             const maxScale = 3.5;
             const step = 0.15;
             let resetTimer = null;
+            let wheelDebounceTimer = null;
 
             let isDragging = false;
             let startMouseX = 0;
             let startMouseY = 0;
 
+            // 辅助函数：根据缩放/移动状态控制标签隐藏与显示
+            function updateTagsVisibility() {
+                // 当处于非初始状态（缩放不等于1 或 位移不等于0）时隐藏标签
+                const isTransformed = Math.abs(scale - 1) > 0.01 || Math.abs(translateX) > 2 || Math.abs(translateY) > 2;
+                tags.forEach(tag => {
+                    if (isTransformed) {
+                        tag.classList.add('tags-hidden');
+                    } else {
+                        tag.classList.remove('tags-hidden');
+                    }
+                });
+            }
+
             function updateTransform() {
-                // translate(-50%, -50%) 用于配合绝对定位居中
                 img.style.transform = `translate(calc(-50% + ${translateX}px), calc(-50% + ${translateY}px)) scale(${scale})`;
+                updateTagsVisibility();
             }
 
             function startResetTimer() {
@@ -904,7 +925,7 @@
                     translateY = 0;
                     img.classList.add('resetting');
                     updateTransform();
-                }, 100000); // 100秒复位
+                }, 10000); // 10秒后自动平滑复位并恢复标签显示
             }
 
             // 初始化位置
@@ -926,7 +947,7 @@
 
             // 按下鼠标开始拖拽
             container.addEventListener('mousedown', (e) => {
-                if (e.button !== 0) return; // 仅限鼠标左键
+                if (e.button !== 0) return;
 
                 isDragging = true;
                 startMouseX = e.clientX - translateX;
@@ -951,7 +972,7 @@
                 updateTransform();
             });
 
-            // 松动鼠标结束拖拽
+            // 松开鼠标结束拖拽
             window.addEventListener('mouseup', () => {
                 if (!isDragging) return;
 
