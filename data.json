@@ -5,7 +5,7 @@
     "repairDev": "1 单",
     "targetRate": "98.5%",
     "oeeValue": 85.7,
-    "mtbf": 180,
+    "mtbf": 100,
     "mttr": 1.2,
     "yieldRate": 99.2,
     "timeOee": 91.5,
