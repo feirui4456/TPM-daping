@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TPM 智能全面生产维护可视化大屏</title>
+    <title>TPM 智能全面生产维护可视化大屏 - 蓝色科技版</title>
     <!-- 引入 ECharts 库 -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
-        /* 全局复位与背景布局 */
+        /* 全局复位与深蓝科技背景布局 */
         * {
             margin: 0;
             padding: 0;
@@ -18,9 +18,9 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background-color: #030814;
+            background-color: #030b1e;
             background-image: 
-                radial-gradient(circle at 50% 50%, rgba(0, 162, 255, 0.12) 0%, transparent 70%),
+                radial-gradient(circle at 50% 50%, rgba(0, 162, 255, 0.12) 0%, transparent 75%),
                 linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
             background-size: 100% 100%, 40px 40px, 40px 40px;
@@ -29,12 +29,23 @@
             position: relative;
         }
 
-        /* 顶部科技感标题栏 */
+        /* 动态蓝色扫描线 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 240, 255, 0.03) 50%, transparent 100%);
+            background-size: 100% 8px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 顶部蓝色科技感标题栏 */
         .header {
             height: 60px;
             width: 100%;
-            background: linear-gradient(180deg, rgba(6, 21, 44, 0.95) 0%, rgba(4, 12, 26, 0.6) 80%, transparent 100%);
-            border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+            background: linear-gradient(180deg, rgba(5, 25, 55, 0.95) 0%, rgba(3, 12, 32, 0.65) 80%, transparent 100%);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -55,12 +66,12 @@
                 transparent 0%, 
                 rgba(0, 240, 255, 0.2) 30%, 
                 #00f0ff 60%, 
-                #00ff87 85%, 
+                #a6f6ff 85%, 
                 #ffffff 98%,
                 transparent 100%
             );
-            box-shadow: 0 0 12px #00f0ff, 0 -2px 8px rgba(0, 255, 135, 0.8);
-            animation: flowLight 3s linear infinite;
+            box-shadow: 0 0 15px #00f0ff, 0 -2px 10px rgba(0, 240, 255, 0.8);
+            animation: flowLight 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
 
         @keyframes flowLight {
@@ -73,7 +84,7 @@
             font-weight: 800;
             letter-spacing: 2px;
             color: #ffffff;
-            text-shadow: 0 0 15px rgba(0, 240, 255, 0.8), 0 0 30px rgba(0, 240, 255, 0.4);
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.8), 0 0 30px rgba(0, 162, 255, 0.5);
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
@@ -87,7 +98,7 @@
             align-items: center;
             gap: 14px;
             font-size: 13px;
-            color: #8da4c4;
+            color: #8bb2d9;
         }
 
         .status-badge {
@@ -100,6 +111,7 @@
             border-radius: 12px;
             color: #00ff87;
             font-size: 12px;
+            box-shadow: 0 0 10px rgba(0, 255, 135, 0.2);
         }
 
         .status-dot {
@@ -108,13 +120,13 @@
             border-radius: 50%;
             background-color: #00ff87;
             box-shadow: 0 0 8px #00ff87;
-            animation: pulse 2s infinite;
+            animation: pulse 1.8s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #00ff87; }
-            100% { transform: scale(0.95); opacity: 0.8; }
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 14px #00ff87; }
+            100% { transform: scale(0.9); opacity: 0.6; }
         }
 
         .time-text {
@@ -122,6 +134,7 @@
             font-size: 14px;
             color: #00f0ff;
             font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
         }
 
         /* 核心网格布局 */
@@ -144,24 +157,43 @@
             overflow: hidden;
         }
 
-        /* 统一卡片面板 */
+        /* 蓝光科技卡片面板 */
         .card-panel {
-            background: rgba(6, 18, 38, 0.65);
+            background: rgba(8, 24, 52, 0.7);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 240, 255, 0.2);
+            border: 1px solid rgba(0, 240, 255, 0.25);
             border-radius: 6px;
             padding: 10px 12px;
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 240, 255, 0.04);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 240, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
             overflow: hidden;
         }
 
+        /* 四角科技微边装饰 */
+        .card-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 6px; height: 6px;
+            border-top: 2px solid #00f0ff;
+            border-left: 2px solid #00f0ff;
+        }
+        .card-panel::after {
+            content: '';
+            position: absolute;
+            bottom: 0; right: 0;
+            width: 6px; height: 6px;
+            border-bottom: 2px solid #00f0ff;
+            border-right: 2px solid #00f0ff;
+        }
+
         .card-panel:hover {
-            border-color: rgba(0, 240, 255, 0.5);
-            box-shadow: 0 8px 36px rgba(0, 0, 0, 0.8), inset 0 0 25px rgba(0, 240, 255, 0.08);
+            border-color: rgba(0, 240, 255, 0.6);
+            box-shadow: 0 8px 36px rgba(0, 240, 255, 0.2), inset 0 0 25px rgba(0, 240, 255, 0.1);
+            transform: translateY(-2px);
         }
 
         .panel-header {
@@ -219,14 +251,20 @@
         }
 
         .stat-ring-item {
-            background: rgba(10, 28, 56, 0.5);
-            border: 1px solid rgba(0, 240, 255, 0.15);
+            background: rgba(0, 162, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.2);
             border-radius: 4px;
             padding: 4px 2px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-ring-item:hover {
+            background: rgba(0, 240, 255, 0.18);
+            border-color: rgba(0, 240, 255, 0.5);
         }
 
         .ring-value {
@@ -239,7 +277,7 @@
 
         .ring-label {
             font-size: 10px;
-            color: #8da4c4;
+            color: #8bb2d9;
             margin-top: 1px;
         }
 
@@ -256,11 +294,12 @@
             width: 100%;
             position: relative;
             border-radius: 6px;
-            overflow: hidden; /* 防止图片溢出容器 */
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            background: radial-gradient(circle at 50% 55%, rgba(0, 180, 255, 0.18) 0%, rgba(2, 8, 20, 0.95) 75%);
+            overflow: hidden;
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            background: radial-gradient(circle at 50% 55%, rgba(0, 162, 255, 0.18) 0%, rgba(3, 11, 28, 0.95) 75%);
             user-select: none;
             cursor: grab;
+            box-shadow: inset 0 0 30px rgba(0, 240, 255, 0.15);
         }
 
         .center-bottom-log {
@@ -273,19 +312,19 @@
             top: 10px;
             left: 10px;
             z-index: 30;
-            background: rgba(6, 20, 42, 0.85);
+            background: rgba(6, 20, 48, 0.88);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 240, 255, 0.4);
             border-radius: 6px;
             padding: 10px 14px;
             width: 240px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 240, 255, 0.15);
-            pointer-events: none; /* 穿透鼠标操作 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.15);
+            pointer-events: none;
         }
 
         .floating-kpi-title {
             font-size: 11px;
-            color: #8da4c4;
+            color: #8bb2d9;
             letter-spacing: 1px;
             margin-bottom: 2px;
         }
@@ -294,8 +333,8 @@
             font-size: 28px;
             font-weight: 900;
             font-family: 'Impact', sans-serif;
-            color: #ffeb3b;
-            text-shadow: 0 0 15px rgba(255, 235, 59, 0.5);
+            color: #00f0ff;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.7);
             line-height: 1;
             margin-bottom: 6px;
         }
@@ -314,7 +353,7 @@
             font-size: 11px;
         }
 
-        .kpi-sub-item .label { color: #a3b8cc; }
+        .kpi-sub-item .label { color: #a3c7eb; }
         .kpi-sub-item .val { color: #00f0ff; font-weight: bold; }
 
         .twin-bg-image {
@@ -324,15 +363,14 @@
             max-width: 90%;
             max-height: 90%;
             object-fit: contain;
-            filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.4));
-            opacity: 0.9;
+            filter: drop-shadow(0 0 18px rgba(0, 240, 255, 0.4));
+            opacity: 0.92;
             transform-origin: center center;
             transition: none;
             display: block;
             pointer-events: auto;
         }
 
-        /* 复位时的动画效果 */
         .twin-bg-image.resetting {
             transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
         }
@@ -342,19 +380,18 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(4, 16, 35, 0.9);
+            background: rgba(5, 22, 50, 0.9);
             border: 1px solid #00f0ff;
             padding: 4px 8px;
             border-radius: 20px;
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
             cursor: pointer;
             z-index: 25;
-            transition: opacity 0.3s ease, transform 0.3s ease; /* 添加透明度过渡 */
+            transition: opacity 0.3s ease, transform 0.3s ease;
             opacity: 1;
             pointer-events: auto;
         }
 
-        /* 新增：定义隐藏标签的状态类 */
         .spatial-tag.tags-hidden {
             opacity: 0;
             pointer-events: none;
@@ -368,6 +405,12 @@
         .spatial-tag.alert {
             border-color: #ff4d4f;
             box-shadow: 0 0 15px rgba(255, 77, 79, 0.6);
+            animation: alertPulse 1.5s infinite alternate;
+        }
+
+        @keyframes alertPulse {
+            0% { box-shadow: 0 0 10px rgba(255, 77, 79, 0.5); border-color: #ff4d4f; }
+            100% { box-shadow: 0 0 25px rgba(255, 77, 79, 1); border-color: #ff7875; }
         }
 
         .tag-icon {
@@ -399,6 +442,7 @@
         #tag-labeling { top: 48%; left: 58%; }
         #tag-packing { top: 68%; left: 72%; }
 
+        /* 流水实时日志表格 */
         .table-container {
             width: 100%;
             height: calc(100% - 28px);
@@ -411,7 +455,7 @@
             display: grid;
             grid-template-columns: 1.5fr 1fr 3fr;
             padding: 6px 10px;
-            background: rgba(0, 240, 255, 0.12);
+            background: rgba(0, 240, 255, 0.15);
             color: #00f0ff;
             font-size: 11px;
             font-weight: bold;
@@ -442,16 +486,17 @@
             display: grid;
             grid-template-columns: 1.5fr 1fr 3fr;
             padding: 6px 10px;
-            background: rgba(10, 25, 50, 0.4);
-            border: 1px solid rgba(0, 240, 255, 0.08);
+            background: rgba(5, 20, 48, 0.5);
+            border: 1px solid rgba(0, 240, 255, 0.1);
             border-radius: 4px;
             font-size: 11px;
             align-items: center;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
         }
 
         .table-row:hover {
-            background: rgba(0, 240, 255, 0.15);
+            background: rgba(0, 240, 255, 0.18);
+            border-color: rgba(0, 240, 255, 0.4);
         }
 
         .badge-status {
@@ -488,6 +533,7 @@
     </div>
 
     <div class="dashboard-container">
+        <!-- 左侧面板 -->
         <div class="side-column">
             <div class="card-panel" style="flex: 1;">
                 <div class="panel-header">
@@ -514,23 +560,24 @@
             </div>
         </div>
 
+        <!-- 中间数字孪生与实时日志 -->
         <div class="center-column">
             <div class="center-top-twin" id="twinContainer">
                 <div class="floating-kpi-panel">
                     <div class="floating-kpi-title">今日事件总数</div>
-                    <div class="floating-kpi-num" id="kpiEventNum">--</div>
+                    <div class="floating-kpi-num" id="kpiEventNum">0</div>
                     <div class="kpi-sub-list">
                         <div class="kpi-sub-item">
                             <span class="label">在线设备</span>
-                            <span class="val" id="kpiRunDev">--</span>
+                            <span class="val" id="kpiRunDev">0</span>
                         </div>
                         <div class="kpi-sub-item">
                             <span class="label">待修工单</span>
-                            <span class="val" style="color:#ff4d4f;" id="kpiRepairDev">--</span>
+                            <span class="val" style="color:#ff4d4f;" id="kpiRepairDev">0</span>
                         </div>
                         <div class="kpi-sub-item">
                             <span class="label">计划达标率</span>
-                            <span class="val" style="color:#00ff87;" id="kpiTargetRate">--</span>
+                            <span class="val" style="color:#00ff87;" id="kpiTargetRate">0%</span>
                         </div>
                     </div>
                 </div>
@@ -571,35 +618,37 @@
             </div>
         </div>
 
+        <!-- 右侧面板 -->
         <div class="side-column">
             <div class="card-panel" style="flex: 1.2;">
                 <div class="panel-header">
                     <span class="panel-title">主要 TPM 可靠性指标</span>
                     <span class="panel-sub-tag">量化对比</span>
                 </div>
+                <!-- 6大 TPM 可靠性指标：动态绑定 ID -->
                 <div class="stat-ring-grid">
                     <div class="stat-ring-item">
-                        <div class="ring-value" id="kpiMtbf">180h</div>
+                        <div class="ring-value" id="kpiMtbf">0h</div>
                         <div class="ring-label">MTBF间隔</div>
                     </div>
                     <div class="stat-ring-item">
-                        <div class="ring-value" style="color:#ff4d4f;" id="kpiMttr">1.2h</div>
+                        <div class="ring-value" style="color:#ff4d4f;" id="kpiMttr">0h</div>
                         <div class="ring-label">MTTR修复</div>
                     </div>
                     <div class="stat-ring-item">
-                        <div class="ring-value" style="color:#00ff87;">99.2%</div>
+                        <div class="ring-value" style="color:#00ff87;" id="kpiYieldRate">0%</div>
                         <div class="ring-label">良品率</div>
                     </div>
                     <div class="stat-ring-item">
-                        <div class="ring-value">91.5%</div>
+                        <div class="ring-value" id="kpiTimeOee">0%</div>
                         <div class="ring-label">时间稼动</div>
                     </div>
                     <div class="stat-ring-item">
-                        <div class="ring-value" style="color:#ffeb3b;">95.0%</div>
+                        <div class="ring-value" style="color:#ffe066;" id="kpiPerfOee">0%</div>
                         <div class="ring-label">性能稼动</div>
                     </div>
                     <div class="stat-ring-item">
-                        <div class="ring-value">98.5%</div>
+                        <div class="ring-value" id="kpiPmRate">0%</div>
                         <div class="ring-label">PM完成率</div>
                     </div>
                 </div>
@@ -609,16 +658,15 @@
             <div class="card-panel" style="flex: 1;">
                 <div class="panel-header">
                     <span class="panel-title">设备故障类型结构占比</span>
-                    <span class="panel-sub-tag">结构分布</span>
+                    <span class="panel-sub-tag">动态高亮</span>
                 </div>
                 <div id="structureRingChart" class="chart-box"></div>
             </div>
         </div>
-
     </div>
 
     <script>
-        // 1. 时钟
+        // 1. 顶部实时时钟
         function updateClock() {
             const now = new Date();
             const y = now.getFullYear();
@@ -632,14 +680,42 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 2. 初始化 ECharts 实例
+        // 2. CountUp 数字缓动上升函数
+        function animateValue(id, start, end, duration = 1200, suffix = '') {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                
+                if (Number.isInteger(end)) {
+                    obj.innerText = Math.floor(easeProgress * (end - start) + start) + suffix;
+                } else {
+                    obj.innerText = (easeProgress * (end - start) + start).toFixed(1) + suffix;
+                }
+
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerText = end + suffix;
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // 3. 初始化 ECharts 实例
         const oeeChart = echarts.init(document.getElementById('oeeChart'));
         const paretoChart = echarts.init(document.getElementById('paretoChart'));
         const monthlyTrendChart = echarts.init(document.getElementById('monthlyTrendChart'));
         const mtbfChart = echarts.init(document.getElementById('mtbfChart'));
         const structureRingChart = echarts.init(document.getElementById('structureRingChart'));
 
-        // 3. 数据异步获取与渲染
+        // 蓝色系高对比配色
+        const techBlueColors = ['#00f0ff', '#1890ff', '#36cfc9', '#096dd9', '#0050b3'];
+
+        // 4. 数据异步获取与渲染
         async function loadDashboardData() {
             try {
                 const response = await fetch('./data.json?t=' + Date.now());
@@ -648,14 +724,14 @@
                 const data = await response.json();
                 
                 renderKPI(data.kpi);
-                renderOEE(data.kpi ? data.kpi.oeeValue : 0);
+                renderOEE(data.kpi ? parseFloat(data.kpi.oeeValue) : 0);
                 renderPareto(data.pareto);
                 renderMonthlyTrend(data.monthlyTrend);
                 renderMTBF(data.mtbf);
                 renderStructure(data.structure);
                 renderLogs(data.logs);
 
-                console.log('✅ 大屏最新数据同步完成！');
+                console.log('✅ 蓝色科技版 TPM 大屏数据同步完成！');
             } catch (err) {
                 console.error('❌ 加载 data.json 出错:', err);
             }
@@ -663,14 +739,27 @@
 
         function renderKPI(kpi) {
             if (!kpi) return;
-            if (kpi.eventNum) document.getElementById('kpiEventNum').innerText = kpi.eventNum;
-            if (kpi.runDev) document.getElementById('kpiRunDev').innerText = kpi.runDev;
-            if (kpi.repairDev) document.getElementById('kpiRepairDev').innerText = kpi.repairDev;
-            if (kpi.targetRate) document.getElementById('kpiTargetRate').innerText = kpi.targetRate;
+            
+            // 顶部与悬浮卡片 KPI
+            if (kpi.eventNum !== undefined) animateValue('kpiEventNum', 0, parseInt(kpi.eventNum));
+            if (kpi.runDev !== undefined) animateValue('kpiRunDev', 0, parseInt(kpi.runDev));
+            if (kpi.repairDev !== undefined) animateValue('kpiRepairDev', 0, parseInt(kpi.repairDev));
+            if (kpi.targetRate !== undefined) animateValue('kpiTargetRate', 0, parseFloat(kpi.targetRate), 1200, '%');
+
+            // 6 大 TPM 可靠性指标 (来自 data.json)
+            if (kpi.mtbf !== undefined) animateValue('kpiMtbf', 0, parseFloat(kpi.mtbf), 1200, 'h');
+            if (kpi.mttr !== undefined) animateValue('kpiMttr', 0, parseFloat(kpi.mttr), 1200, 'h');
+            if (kpi.yieldRate !== undefined) animateValue('kpiYieldRate', 0, parseFloat(kpi.yieldRate), 1200, '%');
+            if (kpi.timeOee !== undefined) animateValue('kpiTimeOee', 0, parseFloat(kpi.timeOee), 1200, '%');
+            if (kpi.perfOee !== undefined) animateValue('kpiPerfOee', 0, parseFloat(kpi.perfOee), 1200, '%');
+            if (kpi.pmRate !== undefined) animateValue('kpiPmRate', 0, parseFloat(kpi.pmRate), 1200, '%');
         }
 
+        // 蓝色科技风 Gauge 仪表盘
         function renderOEE(val) {
             oeeChart.setOption({
+                animationDuration: 1800,
+                animationEasingUpdate: 'cubicOut',
                 tooltip: { formatter: '{a} <br/>{b} : {c}%' },
                 series: [{
                     name: 'OEE',
@@ -686,49 +775,51 @@
                         width: 10,
                         itemStyle: {
                             color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                                { offset: 0, color: '#0066ff' },
-                                { offset: 0.5, color: '#00f0ff' },
-                                { offset: 1, color: '#00ff87' }
+                                { offset: 0, color: '#096dd9' },
+                                { offset: 0.5, color: '#1890ff' },
+                                { offset: 1, color: '#00f0ff' }
                             ])
                         }
                     },
                     axisLine: { lineStyle: { width: 10, color: [[1, 'rgba(0,240,255,0.1)']] } },
-                    pointer: { itemStyle: { color: '#00f0ff' }, width: 3, length: '50%' },
+                    pointer: { itemStyle: { color: '#00f0ff' }, width: 3, length: '52%' },
                     axisTick: { show: false },
-                    splitLine: { length: 4, lineStyle: { color: '#00f0ff', width: 1 } },
-                    axisLabel: { color: '#8da4c4', fontSize: 9, distance: 8 },
+                    splitLine: { length: 5, lineStyle: { color: '#00f0ff', width: 1.5 } },
+                    axisLabel: { color: '#8bb2d9', fontSize: 9, distance: 8 },
                     title: {
                         show: true,
                         offsetCenter: [0, '35%'],
-                        textStyle: { color: '#8da4c4', fontSize: 11, fontWeight: 'normal' }
+                        textStyle: { color: '#8bb2d9', fontSize: 11, fontWeight: 'normal' }
                     },
                     detail: {
                         valueAnimation: true,
                         formatter: '{value}%',
                         color: '#00f0ff',
-                        fontSize: 20,
+                        fontSize: 22,
                         fontWeight: 'bold',
-                        offsetCenter: [0, '-10%']
+                        offsetCenter: [0, '-8%']
                     },
                     data: [{ value: val, name: '综合效率' }]
                 }]
             });
         }
 
+        // 蓝色帕累托混合图
         function renderPareto(pareto) {
             if (!pareto) return;
             paretoChart.setOption({
+                animationDuration: 1500,
                 grid: { top: '22%', bottom: '15%', left: '10%', right: '10%' },
-                tooltip: { trigger: 'axis' },
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
                 xAxis: {
                     type: 'category',
                     data: pareto.categories || [],
                     axisLine: { lineStyle: { color: 'rgba(0,240,255,0.3)' } },
-                    axisLabel: { color: '#a3b8cc', fontSize: 10 }
+                    axisLabel: { color: '#a3c7eb', fontSize: 10 }
                 },
                 yAxis: [
-                    { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }, axisLabel: { color: '#8da4c4', fontSize: 10 } },
-                    { type: 'value', max: 100, splitLine: { show: false }, axisLabel: { formatter: '{value}%', color: '#8da4c4', fontSize: 10 } }
+                    { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }, axisLabel: { color: '#8bb2d9', fontSize: 10 } },
+                    { type: 'value', max: 100, splitLine: { show: false }, axisLabel: { formatter: '{value}%', color: '#8bb2d9', fontSize: 10 } }
                 ],
                 series: [
                     {
@@ -738,9 +829,9 @@
                         itemStyle: {
                             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                                 { offset: 0, color: '#00f0ff' },
-                                { offset: 1, color: '#003366' }
+                                { offset: 1, color: 'rgba(0, 80, 179, 0.2)' }
                             ]),
-                            borderRadius: [3, 3, 0, 0]
+                            borderRadius: [4, 4, 0, 0]
                         },
                         data: pareto.hours || []
                     },
@@ -749,17 +840,21 @@
                         type: 'line',
                         yAxisIndex: 1,
                         smooth: true,
-                        itemStyle: { color: '#ffeb3b' },
-                        lineStyle: { width: 2 },
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        itemStyle: { color: '#ffffff' },
+                        lineStyle: { width: 2.5, color: '#ffffff' },
                         data: pareto.ratios || []
                     }
                 ]
             });
         }
 
+        // 青蓝渐变面积趋势图
         function renderMonthlyTrend(trend) {
             if (!trend) return;
             monthlyTrendChart.setOption({
+                animationDuration: 1800,
                 grid: { top: '18%', bottom: '15%', left: '8%', right: '5%', containLabel: true },
                 tooltip: { trigger: 'axis' },
                 xAxis: {
@@ -767,12 +862,12 @@
                     boundaryGap: false,
                     data: trend.months || [],
                     axisLine: { lineStyle: { color: 'rgba(0,240,255,0.3)' } },
-                    axisLabel: { color: '#8da4c4', fontSize: 10 }
+                    axisLabel: { color: '#8bb2d9', fontSize: 10 }
                 },
                 yAxis: {
                     type: 'value',
                     splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
-                    axisLabel: { color: '#8da4c4', fontSize: 10 }
+                    axisLabel: { color: '#8bb2d9', fontSize: 10 }
                 },
                 series: [
                     {
@@ -783,7 +878,7 @@
                         lineStyle: { width: 3, color: '#00f0ff' },
                         areaStyle: {
                             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                { offset: 0, color: 'rgba(0, 240, 255, 0.4)' },
+                                { offset: 0, color: 'rgba(0, 240, 255, 0.45)' },
                                 { offset: 1, color: 'rgba(0, 240, 255, 0)' }
                             ])
                         },
@@ -793,28 +888,30 @@
             });
         }
 
+        // 双柱对比图
         function renderMTBF(mtbf) {
             if (!mtbf) return;
             mtbfChart.setOption({
+                animationDuration: 1500,
                 grid: { top: '18%', bottom: '12%', left: '8%', right: '5%', containLabel: true },
                 tooltip: { trigger: 'axis' },
                 xAxis: {
                     type: 'category',
                     data: mtbf.devices || [],
                     axisLine: { lineStyle: { color: 'rgba(0,240,255,0.3)' } },
-                    axisLabel: { color: '#8da4c4', fontSize: 10 }
+                    axisLabel: { color: '#8bb2d9', fontSize: 10 }
                 },
                 yAxis: {
                     type: 'value',
                     splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
-                    axisLabel: { color: '#8da4c4', fontSize: 10 }
+                    axisLabel: { color: '#8bb2d9', fontSize: 10 }
                 },
                 series: [
                     {
                         name: 'MTBF',
                         type: 'bar',
                         barWidth: '25%',
-                        itemStyle: { color: '#00ff87', borderRadius: [2, 2, 0, 0] },
+                        itemStyle: { color: '#00f0ff', borderRadius: [2, 2, 0, 0] },
                         data: mtbf.mtbfData || []
                     },
                     {
@@ -828,9 +925,12 @@
             });
         }
 
+        // 蓝色环形饼图与轮播高亮
+        let structureTimer = null;
         function renderStructure(structure) {
             if (!structure) return;
             structureRingChart.setOption({
+                color: techBlueColors,
                 tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
                 legend: { 
                     orient: 'vertical', 
@@ -838,23 +938,35 @@
                     top: 'center', 
                     itemWidth: 8,
                     itemHeight: 8,
-                    textStyle: { color: '#8da4c4', fontSize: 10 } 
+                    textStyle: { color: '#8bb2d9', fontSize: 10 } 
                 },
                 series: [
                     {
                         name: '故障类型',
                         type: 'pie',
-                        radius: ['40%', '68%'],
+                        radius: ['42%', '70%'],
                         center: ['35%', '50%'],
                         avoidLabelOverlap: false,
+                        itemStyle: { borderRadius: 4, borderColor: '#030b1e', borderWidth: 2 },
                         label: { show: false },
                         emphasis: {
-                            label: { show: true, fontSize: 11, fontWeight: 'bold', color: '#fff' }
+                            label: { show: true, fontSize: 12, fontWeight: 'bold', color: '#fff' }
                         },
                         data: structure
                     }
                 ]
             });
+
+            // 自动轮播高亮动画
+            let currentIndex = -1;
+            if (structureTimer) clearInterval(structureTimer);
+            structureTimer = setInterval(() => {
+                const dataLen = structure.length;
+                structureRingChart.dispatchAction({ type: 'downplay', seriesIndex: 0, dataIndex: currentIndex });
+                currentIndex = (currentIndex + 1) % dataLen;
+                structureRingChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: currentIndex });
+                structureRingChart.dispatchAction({ type: 'showTip', seriesIndex: 0, dataIndex: currentIndex });
+            }, 3000);
         }
 
         function renderLogs(logs) {
@@ -871,7 +983,7 @@
             `).join('');
         }
 
-        // 4. 孪生空间图片滚轮缩放、抓手平移与标签自动隐现/复位
+        // 5. 空间图像平移缩放、点位隐现与复位
         function initTwinImageZoom() {
             const container = document.getElementById('twinContainer');
             const img = document.getElementById('twinImg');
@@ -888,15 +1000,12 @@
             const maxScale = 3.5;
             const step = 0.15;
             let resetTimer = null;
-            let wheelDebounceTimer = null;
 
             let isDragging = false;
             let startMouseX = 0;
             let startMouseY = 0;
 
-            // 辅助函数：根据缩放/移动状态控制标签隐藏与显示
             function updateTagsVisibility() {
-                // 当处于非初始状态（缩放不等于1 或 位移不等于0）时隐藏标签
                 const isTransformed = Math.abs(scale - 1) > 0.01 || Math.abs(translateX) > 2 || Math.abs(translateY) > 2;
                 tags.forEach(tag => {
                     if (isTransformed) {
@@ -913,10 +1022,7 @@
             }
 
             function startResetTimer() {
-                if (resetTimer) {
-                    clearTimeout(resetTimer);
-                    resetTimer = null;
-                }
+                if (resetTimer) clearTimeout(resetTimer);
                 img.classList.remove('resetting');
 
                 resetTimer = setTimeout(() => {
@@ -925,72 +1031,56 @@
                     translateY = 0;
                     img.classList.add('resetting');
                     updateTransform();
-                }, 10000); // 10秒后自动平滑复位并恢复标签显示
+                }, 10000);
             }
 
-            // 初始化位置
             updateTransform();
 
-            // 滚轮缩放
             container.addEventListener('wheel', (e) => {
                 e.preventDefault();
-
                 if (e.deltaY < 0) {
                     scale = Math.min(maxScale, scale + step);
                 } else {
                     scale = Math.max(minScale, scale - step);
                 }
-
                 updateTransform();
                 startResetTimer();
             }, { passive: false });
 
-            // 按下鼠标开始拖拽
             container.addEventListener('mousedown', (e) => {
                 if (e.button !== 0) return;
-
                 isDragging = true;
                 startMouseX = e.clientX - translateX;
                 startMouseY = e.clientY - translateY;
 
                 container.style.cursor = 'grabbing';
                 img.classList.remove('resetting');
-
-                if (resetTimer) {
-                    clearTimeout(resetTimer);
-                    resetTimer = null;
-                }
+                if (resetTimer) clearTimeout(resetTimer);
             });
 
-            // 拖拽中
             window.addEventListener('mousemove', (e) => {
                 if (!isDragging) return;
-
                 translateX = e.clientX - startMouseX;
                 translateY = e.clientY - startMouseY;
-
                 updateTransform();
             });
 
-            // 松开鼠标结束拖拽
             window.addEventListener('mouseup', () => {
                 if (!isDragging) return;
-
                 isDragging = false;
                 container.style.cursor = 'grab';
-
                 startResetTimer();
             });
         }
 
-        // 5. 页面首次加载与定时轮询
+        // 6. 首次加载与页面事件
         window.addEventListener('DOMContentLoaded', () => {
             loadDashboardData();
             initTwinImageZoom();
             setInterval(loadDashboardData, 60000);
         });
 
-        // 6. 窗口自适应
+        // 7. 窗口响应缩放
         window.addEventListener('resize', () => {
             oeeChart.resize();
             paretoChart.resize();
