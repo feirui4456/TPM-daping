@@ -4,7 +4,13 @@
     "runDev": "16 台",
     "repairDev": "1 单",
     "targetRate": "98.5%",
-    "oeeValue": 85.7
+    "oeeValue": 85.7,
+    "mtbf": 180,
+    "mttr": 1.2,
+    "yieldRate": 99.2,
+    "timeOee": 91.5,
+    "perfOee": 95.0,
+    "pmRate": 98.5
   },
   "pareto": {
     "categories": ["电气开路", "气压低", "卡料拉标", "换型", "CIP"],
